@@ -1,0 +1,65 @@
+
+— GENERAL RESOURCES
+
+Genaro´s home:
+http://www.comunidad.escom.ipn.mx/genaro/home.html
+
+
+— SOFTWARE
+
+Golly:
+http://golly.sourceforge.net
+
+Andy Wuensche’s DDLab:
+http://www.ddlab.com/index.html
+
+Nazim Fatès’s FiatLux: 
+https://project.inria.fr/fiatlux/
+
+Mirek’s Cellebration (MCell 4.2): 
+http://www.mirekw.com/ca/index.html
+
+
+— WOLFRAM LANGUAGE
+
+Wolfram U: Open courses for students and professionals
+https://www.wolfram.com/wolfram-u/
+
+Wolfram Language Home Page
+http://www.wolfram.com/language/
+
+Wolfram Language Reference
+http://reference.wolfram.com/language/
+
+Mathematica Learning Center
+http://www.wolfram.com/support/learn/
+
+Hands-on Start with Mathematica
+http://www.wolfram.com/broadcast/screencasts/handsonstart/
+
+Wolfram Fast Introduction for Programmers
+http://www.wolfram.com/language/fast-introduction-for-programmers
+
+An Elementary Introduction to the Wolfram Language - Second Edition
+https://www.wolfram.com/language/elementary-introduction/2nd-ed/index.html
+
+
+— NKS
+
+NKS and NKS Summer School:
+https://www.wolframscience.com/summerschool/
+
+Programs from the Technical Notes part of the book:
+http://www.wolframscience.com/nks/programs/index.html
+
+Wolfram Atlas of Simple Programs:
+http://atlas.wolfram.com
+
+
+— OUTROS MATHEMATICA
+
+MathWorld:
+http://mathworld.wolfram.com
+
+Wolfram Functions:
+http://functions.wolfram.com
