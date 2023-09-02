@@ -1,1 +1,3 @@
-# Cellular Automata
+# CELLULAR AUTOMATA [Turma 01A] - 2023/2
+
+code: 001ENST54075.03859-01A

@@ -1,0 +1,817 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     30761,        809]
+NotebookOptionsPosition[     25947,        722]
+NotebookOutlinePosition[     26439,        740]
+CellTagsIndexPosition[     26396,        737]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Exerc\[IAcute]cios sobre a Wolfram Language (do Mathematica)", "Title",
+ CellChangeTimes->{{3.9026818971790237`*^9, 
+  3.902681910700859*^9}},ExpressionUUID->"32da05dd-d891-4fbe-a964-\
+421701eb3029"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+1. A Cifra de C\[EAcute]sar, m\[EAcute]todo cl\[AAcute]ssico de criptografia, \
+consiste em trocar as letras de uma mensagem por letras do alfabeto que se \
+encontram a certa dist\[AHat]ncia da primeira. Por exemplo, uma \
+poss\[IAcute]vel Cifra de C\[EAcute]sar seria trocar A por D, B por E, C por \
+F e assim sucessivamente.\
+\>", "Section",
+ CellChangeTimes->{{3.9026819301551228`*^9, 
+  3.9026819699420953`*^9}},ExpressionUUID->"876dcc77-dd27-4ed3-93e6-\
+807a66a350ef"],
+
+Cell["\<\
+(a) Consulte a documenta\[CCedilla]\[ATilde]o do Mathematica a respeito das \
+fun\[CCedilla]\[ATilde]o RotateLeft; \
+\>", "Text",
+ CellChangeTimes->{
+  3.9026820145334797`*^9},ExpressionUUID->"5ba68213-2080-46a5-b7a0-\
+46dc4411ac81"],
+
+Cell["\<\
+(b) Crie uma fun\[CCedilla]\[ATilde]o GerarCifra que recebe como entrada um \
+inteiro n de posi\[CCedilla]\[OTilde]es e devolve uma lista de regras de \
+substitui\[CCedilla]\[ATilde]o que associa cada letra \[AGrave] letra que est\
+\[AAcute] n posi\[CCedilla]\[OTilde]es \[AGrave] frente no alfabeto. Por \
+exemplo, GerarCifra[3] deve devolver regras de substitui\[CCedilla]\[ATilde]o \
+referentes ao exemplo acima. \
+\>", "Text",
+ CellChangeTimes->{
+  3.902682076181345*^9},ExpressionUUID->"529f9c04-19e5-4df7-bf47-\
+6aabe35502f5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"GerarCifra", "[", "n_Integer", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"alfabeto", ",", "alfabetoDeslocado", ",", "regras"}], "}"}], 
+     ",", 
+     RowBox[{
+      RowBox[{"alfabeto", "=", 
+       RowBox[{"Alphabet", "[", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"alfabetoDeslocado", "=", 
+       RowBox[{"RotateLeft", "[", 
+        RowBox[{"alfabeto", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"regras", "=", 
+       RowBox[{"Thread", "[", 
+        RowBox[{"alfabeto", "\[Rule]", "alfabetoDeslocado"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "regras", "]"}], ";"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Exemplo", " ", "de", " ", "uso"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"cifra3", "=", 
+  RowBox[{"GerarCifra", "[", "3", "]"}]}]}], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"439cfb67-56c4-49e0-b204-0bb91cacbdcb"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"a\"\>", "\[Rule]", "\<\"d\"\>"}], ",", 
+   RowBox[{"\<\"b\"\>", "\[Rule]", "\<\"e\"\>"}], ",", 
+   RowBox[{"\<\"c\"\>", "\[Rule]", "\<\"f\"\>"}], ",", 
+   RowBox[{"\<\"d\"\>", "\[Rule]", "\<\"g\"\>"}], ",", 
+   RowBox[{"\<\"e\"\>", "\[Rule]", "\<\"h\"\>"}], ",", 
+   RowBox[{"\<\"f\"\>", "\[Rule]", "\<\"i\"\>"}], ",", 
+   RowBox[{"\<\"g\"\>", "\[Rule]", "\<\"j\"\>"}], ",", 
+   RowBox[{"\<\"h\"\>", "\[Rule]", "\<\"k\"\>"}], ",", 
+   RowBox[{"\<\"i\"\>", "\[Rule]", "\<\"l\"\>"}], ",", 
+   RowBox[{"\<\"j\"\>", "\[Rule]", "\<\"m\"\>"}], ",", 
+   RowBox[{"\<\"k\"\>", "\[Rule]", "\<\"n\"\>"}], ",", 
+   RowBox[{"\<\"l\"\>", "\[Rule]", "\<\"o\"\>"}], ",", 
+   RowBox[{"\<\"m\"\>", "\[Rule]", "\<\"p\"\>"}], ",", 
+   RowBox[{"\<\"n\"\>", "\[Rule]", "\<\"q\"\>"}], ",", 
+   RowBox[{"\<\"o\"\>", "\[Rule]", "\<\"r\"\>"}], ",", 
+   RowBox[{"\<\"p\"\>", "\[Rule]", "\<\"s\"\>"}], ",", 
+   RowBox[{"\<\"q\"\>", "\[Rule]", "\<\"t\"\>"}], ",", 
+   RowBox[{"\<\"r\"\>", "\[Rule]", "\<\"u\"\>"}], ",", 
+   RowBox[{"\<\"s\"\>", "\[Rule]", "\<\"v\"\>"}], ",", 
+   RowBox[{"\<\"t\"\>", "\[Rule]", "\<\"w\"\>"}], ",", 
+   RowBox[{"\<\"u\"\>", "\[Rule]", "\<\"x\"\>"}], ",", 
+   RowBox[{"\<\"v\"\>", "\[Rule]", "\<\"y\"\>"}], ",", 
+   RowBox[{"\<\"w\"\>", "\[Rule]", "\<\"z\"\>"}], ",", 
+   RowBox[{"\<\"x\"\>", "\[Rule]", "\<\"a\"\>"}], ",", 
+   RowBox[{"\<\"y\"\>", "\[Rule]", "\<\"b\"\>"}], ",", 
+   RowBox[{"\<\"z\"\>", "\[Rule]", "\<\"c\"\>"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9026821042192516`*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"948da06d-0cf1-41a9-aa8d-716ad8454739"]
+}, Open  ]],
+
+Cell["\<\
+(c) Crie uma fun\[CCedilla]\[ATilde]o Encriptar que recebe um string s e um \
+inteiro n e codifica o string s de acordo com a cifra dada por GeraCifra[n]. \
+\>", "Text",
+ CellChangeTimes->{
+  3.9026821220940924`*^9},ExpressionUUID->"947f8791-f6a9-4edb-8578-\
+0a423ef9bafd"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Encriptar", "[", 
+    RowBox[{"s_String", ",", "n_Integer"}], "]"}], ":=", 
+   RowBox[{"StringJoin", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"FromCharacterCode", "[", 
+       RowBox[{
+        RowBox[{"Mod", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"ToCharacterCode", "[", "#", "]"}], "-", "97", "+", "n"}], 
+          ",", "26"}], "]"}], "+", "97"}], "]"}], "&"}], "/@", 
+     RowBox[{"StringSplit", "[", "s", "]"}]}], "]"}]}], "\n"}]], "Input",
+ CellChangeTimes->{{3.9026821313530273`*^9, 3.9026821313560266`*^9}, {
+  3.9026823115387383`*^9, 3.9026823128856764`*^9}, {3.9026823897359505`*^9, 
+  3.9026823911659665`*^9}},
+ CellLabel->"In[27]:=",ExpressionUUID->"70b72cff-3350-4296-a7dd-f06d5b6fa884"],
+
+Cell["\<\
+(d) Crie uma fun\[CCedilla]\[ATilde]o Decriptar que recebe um string s e um \
+inteiro n e remove a codifica\[CCedilla]\[ATilde]o de s, supondo que esta foi \
+codificada por Encriptar[s,n].\
+\>", "Text",
+ CellChangeTimes->{
+  3.902682155158374*^9},ExpressionUUID->"91940a20-ae04-4a57-979e-\
+9fb1551c1b04"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Decriptar", "[", 
+    RowBox[{"s_String", ",", "n_Integer"}], "]"}], ":=", 
+   RowBox[{"Encriptar", "[", 
+    RowBox[{"s", ",", 
+     RowBox[{"-", "n"}]}], "]"}]}], "\n"}]], "Input",
+ CellChangeTimes->{{3.9026822643907967`*^9, 3.902682264392798*^9}, {
+  3.902682322723422*^9, 3.902682331575447*^9}, {3.902682418394588*^9, 
+  3.902682421933446*^9}},
+ CellLabel->"In[28]:=",ExpressionUUID->"f930f7c4-e1fa-4c28-9d77-81125c3c3ae6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mensagemOriginal", "=", "\"\<ola\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"n", "=", "3"}], ";"}], "\n", 
+ RowBox[{"mensagemCodificada", "=", 
+  RowBox[{"Encriptar", "[", 
+   RowBox[{"mensagemOriginal", ",", "n"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{"mensagemDecodificada", "=", 
+   RowBox[{"Decriptar", "[", 
+    RowBox[{"mensagemCodificada", ",", "n"}], "]"}]}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "mensagemCodificada", " ", "conter\[AAcute]", " ", "a", " ", "mensagem", 
+    " ", "criptografada"}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "mensagemDecodificada", " ", "conter\[AAcute]", " ", "a", " ", "mensagem", 
+    " ", "original", " ", "\"\<ola\>\""}], 
+   "*)"}]}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.9026824311622295`*^9, 3.9026824311644087`*^9}},
+ CellLabel->"In[29]:=",ExpressionUUID->"489c677a-28c2-4a72-865f-d9a470236886"],
+
+Cell[BoxData["\<\"rod\"\>"], "Output",
+ CellChangeTimes->{3.9026824329204807`*^9},
+ CellLabel->"Out[31]=",ExpressionUUID->"a2233754-56d7-4e4f-9f96-4e9d5df0c384"],
+
+Cell[BoxData["\<\"ola\"\>"], "Output",
+ CellChangeTimes->{3.902682432926803*^9},
+ CellLabel->"Out[32]=",ExpressionUUID->"ef03c276-2478-4437-b21b-8344ace64e5d"]
+}, Open  ]],
+
+Cell["\<\
+(e) Com n=5, use Decriptar, para decifrar a mensagem: \
+\[OpenCurlyDoubleQuote]ujiwt ufzqt gfqgn ij tqnajnwf\[CloseCurlyDoubleQuote].\
+\>", "Text",
+ CellChangeTimes->{
+  3.9026824509544697`*^9},ExpressionUUID->"113220d2-1435-402f-971b-\
+60c4fccd82f7"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "mensagemCodificada", "=", "\"\<ujiwt ufzqt gfqgn ij tqnajnwf\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"n", "=", "5"}], ";"}], "\n", 
+ RowBox[{"mensagemDecodificada", "=", 
+  RowBox[{"Decriptar", "[", 
+   RowBox[{"mensagemCodificada", ",", "n"}], "]"}]}], "\n"}], "Input",
+ CellChangeTimes->{{3.902682465871619*^9, 3.9026824658746185`*^9}},
+ CellLabel->"In[33]:=",ExpressionUUID->"d2bf5887-bfb2-405d-ae2f-27e36ed2d715"],
+
+Cell[BoxData["\<\"pedropaulobalbideoliveira\"\>"], "Output",
+ CellChangeTimes->{3.902682468711957*^9},
+ CellLabel->"Out[35]=",ExpressionUUID->"63b22dd1-db31-4857-8d38-4817758f146f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+2. A sequ\[EHat]ncia de Fibonacci apresenta seus dois primeiros termos iguais \
+a 1 e cada termo seguinte 
+\[EAcute] igual \[AGrave] soma dos dois anteriores. Portanto, os 6 primeiros \
+termos da Sequ\[EHat]ncia de Fibonacci 
+s\[ATilde]o: 1, 1, 2, 3, 5, 8, ...\
+\>", "Section",
+ CellChangeTimes->{{3.9026825594660745`*^9, 3.9026825620367413`*^9}, {
+  3.902682598052808*^9, 
+  3.902682616149501*^9}},ExpressionUUID->"7fd7d311-28d8-4b69-9462-\
+07118d64990b"],
+
+Cell["\<\
+(a) Crie uma fun\[CCedilla]\[ATilde]o SeqFibonacci[n], n maior que 0, e \
+devolve o n-\[EAcute]simo termo da sequ\[EHat]ncia de Fibonacci, gerado \
+recursivamente. \
+\>", "Text",
+ CellChangeTimes->{
+  3.902682634185335*^9},ExpressionUUID->"ee533b65-616d-4ebb-b5e2-\
+900db16ef4c3"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SeqFibonacci", "[", "n_", "]"}], ":=", 
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"n", "\[LessEqual]", "2"}], ",", "1", ",", 
+    RowBox[{
+     RowBox[{"SeqFibonacci", "[", 
+      RowBox[{"n", "-", "1"}], "]"}], "+", 
+     RowBox[{"SeqFibonacci", "[", 
+      RowBox[{"n", "-", "2"}], "]"}]}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.902682640368273*^9, 3.902682641557548*^9}},
+ CellLabel->"In[36]:=",ExpressionUUID->"128b31bd-bfbd-4e95-9b1c-f9a847c2de24"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "6"}], ";"}], "\n", 
+ RowBox[{"termoFibonacci", "=", 
+  RowBox[{"SeqFibonacci", "[", "n", "]"}]}]}], "Input",
+ CellChangeTimes->{{3.902682649410163*^9, 3.902682650901585*^9}},
+ CellLabel->"In[37]:=",ExpressionUUID->"8061ea8e-a47c-4be0-a0bd-f9769205f52e"],
+
+Cell[BoxData["8"], "Output",
+ CellChangeTimes->{3.9026826514199753`*^9},
+ CellLabel->"Out[38]=",ExpressionUUID->"7e6d8ae9-eff3-4012-8e80-93e7a91b2e47"]
+}, Open  ]],
+
+Cell["\<\
+(b) Adapte a fun\[CCedilla]\[ATilde]o anterior, para que ela admita a forma \
+SeqFibonacci[{n}], de maneira a gerar os n primeiros elementos da \
+sequ\[EHat]ncia de Fibonacci\
+\>", "Text",
+ CellChangeTimes->{{3.9026826688770466`*^9, 
+  3.9026826698552523`*^9}},ExpressionUUID->"9fbe51a5-6cee-497d-ac3e-\
+5c081ea693f1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SeqFibonacci", "[", 
+   RowBox[{"{", "n_Integer", "}"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "fibonacci", "}"}], ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"fibonacci", "[", "1", "]"}], "=", 
+      RowBox[{
+       RowBox[{"fibonacci", "[", "2", "]"}], "=", "1"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"fibonacci", "[", "i_", "]"}], ":=", 
+      RowBox[{
+       RowBox[{"fibonacci", "[", "i", "]"}], "=", 
+       RowBox[{
+        RowBox[{"fibonacci", "[", 
+         RowBox[{"i", "-", "1"}], "]"}], "+", 
+        RowBox[{"fibonacci", "[", 
+         RowBox[{"i", "-", "2"}], "]"}]}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"fibonacci", "[", "i", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "n"}], "}"}]}], "]"}]}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.902682674799173*^9, 3.90268267674133*^9}},
+ CellLabel->"In[39]:=",ExpressionUUID->"681f3f1c-1b9f-45b0-9471-2fd94a78d75a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "6"}], ";"}], "\n", 
+ RowBox[{"seqFibonacci", "=", 
+  RowBox[{"SeqFibonacci", "[", 
+   RowBox[{"{", "n", "}"}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.902682683568443*^9, 3.9026826848350143`*^9}},
+ CellLabel->"In[40]:=",ExpressionUUID->"afef138b-dc1f-4350-8aa7-185684506787"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1", ",", "2", ",", "3", ",", "5", ",", "8"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.902682685138015*^9},
+ CellLabel->"Out[41]=",ExpressionUUID->"34cf95a9-871d-486e-986f-209e0174287c"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+3. A fun\[CCedilla]\[ATilde]o Length no Mathematica \[EAcute] especialmente \
+\[UAcute]til para sabermos o tamanho de uma lista. Assim, por exemplo, \
+Length[{1,5,7}] gera a sa\[IAcute]da 3, enquanto Length[{}] gera a \
+sa\[IAcute]da 0. \
+\>", "Section",
+ CellChangeTimes->{{3.902682794477584*^9, 
+  3.9026827959478226`*^9}},ExpressionUUID->"f8fac34b-f083-429d-8bcb-\
+63af9c5899eb"],
+
+Cell["\<\
+(a) Crie uma fun\[CCedilla]\[ATilde]o Contar que recebe com entrada um \
+inteiro n, e uma lista L de inteiros entre 1 e n, e devolve uma lista de \
+tamanho n, onde o primeiro elemento \[EAcute] o n\[UAcute]mero de vezes que o \
+d\[IAcute]gito 1 aparece em L, o segundo \[EAcute] o n\[UAcute]mero de vezes \
+que o d\[IAcute]gito 2 aparece em L, e assim sucessivamente.  Por exemplo, \
+Contar[5,{1,1,3,4,3,5}] deve gerar {2,0,2,1,1}. \
+\>", "Text",
+ CellChangeTimes->{{3.9026828118410172`*^9, 
+  3.902682837196807*^9}},ExpressionUUID->"ceba750c-ef3c-4f28-b4ea-\
+3f4dda4a01fb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Contar", "[", 
+    RowBox[{"n_Integer", ",", "L_List"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "contagens", "}"}], ",", 
+     RowBox[{
+      RowBox[{"contagens", "=", 
+       RowBox[{"ConstantArray", "[", 
+        RowBox[{"0", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Scan", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"contagens", "[", 
+            RowBox[{"[", "#", "]"}], "]"}], "++"}], ")"}], "&"}], ",", "L"}], 
+       "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "contagens", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Exemplo", " ", "de", " ", "uso"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Contar", "[", 
+  RowBox[{"5", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1", ",", "3", ",", "4", ",", "3", ",", "5"}], "}"}]}], 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.902682818816493*^9, 
+  3.9026828230547037`*^9}},ExpressionUUID->"fbcc05d5-4c6c-4c48-a6aa-\
+cbaaffcb41d0"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"2", ",", "0", ",", "2", ",", "1", ",", "1"}], "}"}]], "Output",
+ CellChangeTimes->{3.9026828207508802`*^9},
+ CellLabel->"Out[43]=",ExpressionUUID->"1ed9e891-13b4-4d52-981c-6419af6ecb8c"]
+}, Open  ]],
+
+Cell["\<\
+(b) Teste a fun\[CCedilla]\[ATilde]o Contar com a vari\[AAcute]vel \
+listadeinteiros=RandomInteger[{1,50},100]; que ser\[AAcute] inicializada com \
+uma lista de 100 inteiros entre 1 e 50.\
+\>", "Text",
+ CellChangeTimes->{
+  3.9026828419281826`*^9},ExpressionUUID->"1a4f07ed-e1b9-41d3-a397-\
+329507d3c658"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"listadeinteiros", "=", 
+   RowBox[{"RandomInteger", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "50"}], "}"}], ",", "100"}], "]"}]}], ";"}], "\n", 
+ RowBox[{"resultados", "=", 
+  RowBox[{"Contar", "[", 
+   RowBox[{"50", ",", "listadeinteiros"}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9026828484634066`*^9, 3.9026828495899925`*^9}},
+ CellLabel->"In[44]:=",ExpressionUUID->"a503da39-e690-43e0-ba21-1a7d272bab48"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "2", ",", "3", ",", "0", ",", "3", ",", "2", ",", "3", ",", "4", ",", "1", 
+   ",", "2", ",", "3", ",", "3", ",", "0", ",", "2", ",", "3", ",", "2", ",", 
+   "1", ",", "3", ",", "1", ",", "2", ",", "3", ",", "4", ",", "1", ",", "4", 
+   ",", "1", ",", "1", ",", "0", ",", "3", ",", "3", ",", "1", ",", "1", ",", 
+   "2", ",", "1", ",", "1", ",", "1", ",", "2", ",", "1", ",", "1", ",", "2", 
+   ",", "0", ",", "4", ",", "2", ",", "2", ",", "3", ",", "2", ",", "2", ",", 
+   "3", ",", "4", ",", "1", ",", "3", ",", "1"}], "}"}]], "Output",
+ CellChangeTimes->{3.9026828498357983`*^9},
+ CellLabel->"Out[45]=",ExpressionUUID->"f508e192-40e1-4184-8f0d-e050975fcb0f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["4. Exerc\[IAcute]cios extras", "Section",
+ CellChangeTimes->{{3.902682869686057*^9, 
+  3.90268287537381*^9}},ExpressionUUID->"acf2e5e3-c289-446e-846d-\
+05ad36976621"],
+
+Cell["\<\
+(a) Crie uma fun\[CCedilla]\[ATilde]o CompletarLista que recebe uma lista L e \
+um inteiro n maior que o tamanho da lista, e \[OpenCurlyDoubleQuote]completa\
+\[CloseCurlyDoubleQuote] L at\[EAcute] ela ficar de tamanho n da seguinte \
+maneira: com 0s, se a soma dos elementos de L for par, e com 1s, se a soma \
+dos elementos de L for \[IAcute]mpar. Assim, por exemplo, \
+CompletarLista[{1,2,3},5] gera a lista {1,2,3,0,0}.\
+\>", "Text",
+ CellChangeTimes->{
+  3.9026828910947294`*^9},ExpressionUUID->"fbfed92f-34ac-4ed2-8f44-\
+4a64bdb7fb17"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"CompletarLista", "[", 
+    RowBox[{"L_List", ",", "n_Integer"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"soma", ",", "completada"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"soma", "=", 
+       RowBox[{"Total", "[", "L", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"completada", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{"L", ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"EvenQ", "[", "soma", "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"0", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"1", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}]}], "]"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "completada", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Exemplo", " ", "de", " ", "uso"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"CompletarLista", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", "5"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.902682905793948*^9, 3.902682907047027*^9}},
+ CellLabel->"In[46]:=",ExpressionUUID->"147e4cc3-62bd-4d61-868c-7238f43a3202"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "2", ",", "3", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{3.9026829073458757`*^9},
+ CellLabel->"Out[47]=",ExpressionUUID->"a2ab7e6d-537d-4819-b8fd-3e2f33bea6d9"]
+}, Open  ]],
+
+Cell["\<\
+(b) Crie uma fun\[CCedilla]\[ATilde]o PadronizarListas que recebe uma lista \
+de listas e faz com que todas fiquem com o tamanho da maior lista recebida \
+usando a fun\[CCedilla]\[ATilde]o CompletarLista.\
+\>", "Text",
+ CellChangeTimes->{
+  3.902682925943712*^9},ExpressionUUID->"15ffcfac-fab9-4fc4-baf8-\
+f2e86eae32d2"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"CompletarLista", "[", 
+    RowBox[{"L_List", ",", "n_Integer"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"soma", ",", "completada"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"soma", "=", 
+       RowBox[{"Total", "[", "L", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"completada", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{"L", ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"EvenQ", "[", "soma", "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"0", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"1", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}]}], "]"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "completada", "]"}]}]}], "]"}]}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"PadronizarListas", "[", "listas_List", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"maxSize", ",", "padronizadas"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"maxSize", "=", 
+       RowBox[{"Max", "[", 
+        RowBox[{"Length", "/@", "listas"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"padronizadas", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"CompletarLista", "[", 
+          RowBox[{"#", ",", "maxSize"}], "]"}], "&"}], "/@", "listas"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "padronizadas", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Exemplo", " ", "de", " ", "uso"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"listas", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "5"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "7", ",", "8", ",", "9"}], "}"}]}], "}"}]}], 
+  ";"}], "\n", 
+ RowBox[{"listaPadronizada", "=", 
+  RowBox[{"PadronizarListas", "[", "listas", "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9026829388565025`*^9, 3.9026829400070066`*^9}},
+ CellLabel->"In[48]:=",ExpressionUUID->"83c5204f-7ca0-4144-8172-0268771fb19d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "5", ",", "1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"6", ",", "7", ",", "8", ",", "9"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9026829402485037`*^9},
+ CellLabel->"Out[51]=",ExpressionUUID->"e83897e3-d6ef-4216-aa90-fe7cd69be3db"]
+}, Open  ]],
+
+Cell["\<\
+(c)  Crie uma fun\[CCedilla]\[ATilde]o SomarListas que recebe uma lista de \
+listas, completa-as pela fun\[CCedilla]\[ATilde]o PadronizarListas, \
+j\[AAcute] que elas n\[ATilde]o necessariamente t\[EHat]m de ser do mesmo \
+tamanho, e retorna uma lista com as somas dos n\[UAcute]meros presentes nas \
+posi\[CCedilla]\[OTilde]es hom\[OAcute]logas de cada lista de entrada. \
+\>", "Text",
+ CellChangeTimes->{
+  3.902682953543279*^9},ExpressionUUID->"2dcad48f-84c8-41e0-b8ea-\
+2297a5428b7c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"CompletarLista", "[", 
+    RowBox[{"L_List", ",", "n_Integer"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"soma", ",", "completada"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"soma", "=", 
+       RowBox[{"Total", "[", "L", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"completada", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{"L", ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"EvenQ", "[", "soma", "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"0", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}], ",", 
+           RowBox[{"ConstantArray", "[", 
+            RowBox[{"1", ",", 
+             RowBox[{"n", "-", 
+              RowBox[{"Length", "[", "L", "]"}]}]}], "]"}]}], "]"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "completada", "]"}]}]}], "]"}]}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"PadronizarListas", "[", "listas_List", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"maxSize", ",", "padronizadas"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"maxSize", "=", 
+       RowBox[{"Max", "[", 
+        RowBox[{"Length", "/@", "listas"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"padronizadas", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"CompletarLista", "[", 
+          RowBox[{"#", ",", "maxSize"}], "]"}], "&"}], "/@", "listas"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "padronizadas", "]"}]}]}], "]"}]}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"SomarListas", "[", "listas_List", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"listasPadronizadas", ",", "somas"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"listasPadronizadas", "=", 
+       RowBox[{"PadronizarListas", "[", "listas", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"somas", "=", 
+       RowBox[{"Total", "[", "listasPadronizadas", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "somas", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Exemplo", " ", "de", " ", "uso"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"listas", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "5"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "7", ",", "8", ",", "9"}], "}"}]}], "}"}]}], 
+  ";"}], "\n", 
+ RowBox[{"somas", "=", 
+  RowBox[{"SomarListas", "[", "listas", "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9026829656722536`*^9, 3.902682966518409*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"4910bcd1-1acb-4bfd-92e6-5429acf0f590"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"11", ",", "14", ",", "12", ",", "10"}], "}"}]], "Output",
+ CellChangeTimes->{3.902682966781745*^9},
+ CellLabel->"Out[56]=",ExpressionUUID->"b9ba49ec-72cd-4780-973b-9af4c9945604"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{760, 813},
+WindowMargins->{{Automatic, 282}, {61, Automatic}},
+TaggingRules->{
+ "WelcomeScreenSettings" -> {"FEStarting" -> False}, "TryRealOnly" -> False},
+FrontEndVersion->"12.1 for Microsoft Windows (64-bit) (June 9, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"8f7b2a7a-db75-4845-9b5f-c89f8800f605"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 205, 3, 156, "Title",ExpressionUUID->"32da05dd-d891-4fbe-a964-421701eb3029"],
+Cell[CellGroupData[{
+Cell[810, 29, 484, 9, 219, "Section",ExpressionUUID->"876dcc77-dd27-4ed3-93e6-807a66a350ef"],
+Cell[1297, 40, 243, 6, 34, "Text",ExpressionUUID->"5ba68213-2080-46a5-b7a0-46dc4411ac81"],
+Cell[1543, 48, 542, 10, 78, "Text",ExpressionUUID->"529f9c04-19e5-4df7-bf47-6aabe35502f5"],
+Cell[CellGroupData[{
+Cell[2110, 62, 1033, 26, 252, "Input",ExpressionUUID->"439cfb67-56c4-49e0-b204-0bb91cacbdcb"],
+Cell[3146, 90, 1631, 30, 52, "Output",ExpressionUUID->"948da06d-0cf1-41a9-aa8d-716ad8454739"]
+}, Open  ]],
+Cell[4792, 123, 283, 6, 56, "Text",ExpressionUUID->"947f8791-f6a9-4edb-8578-0a423ef9bafd"],
+Cell[5078, 131, 775, 19, 103, "Input",ExpressionUUID->"70b72cff-3350-4296-a7dd-f06d5b6fa884"],
+Cell[5856, 152, 314, 7, 56, "Text",ExpressionUUID->"91940a20-ae04-4a57-979e-9fb1551c1b04"],
+Cell[6173, 161, 474, 11, 66, "Input",ExpressionUUID->"f930f7c4-e1fa-4c28-9d77-81125c3c3ae6"],
+Cell[CellGroupData[{
+Cell[6672, 176, 948, 23, 162, "Input",ExpressionUUID->"489c677a-28c2-4a72-865f-d9a470236886"],
+Cell[7623, 201, 161, 2, 32, "Output",ExpressionUUID->"a2233754-56d7-4e4f-9f96-4e9d5df0c384"],
+Cell[7787, 205, 159, 2, 32, "Output",ExpressionUUID->"ef03c276-2478-4437-b21b-8344ace64e5d"]
+}, Open  ]],
+Cell[7961, 210, 261, 6, 34, "Text",ExpressionUUID->"113220d2-1435-402f-971b-60c4fccd82f7"],
+Cell[CellGroupData[{
+Cell[8247, 220, 461, 11, 86, "Input",ExpressionUUID->"d2bf5887-bfb2-405d-ae2f-27e36ed2d715"],
+Cell[8711, 233, 181, 2, 32, "Output",ExpressionUUID->"63b22dd1-db31-4857-8d38-4817758f146f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8941, 241, 466, 10, 219, "Section",ExpressionUUID->"7fd7d311-28d8-4b69-9462-07118d64990b"],
+Cell[9410, 253, 290, 7, 56, "Text",ExpressionUUID->"ee533b65-616d-4ebb-b5e2-900db16ef4c3"],
+Cell[9703, 262, 497, 12, 45, "Input",ExpressionUUID->"128b31bd-bfbd-4e95-9b1c-f9a847c2de24"],
+Cell[CellGroupData[{
+Cell[10225, 278, 299, 6, 48, "Input",ExpressionUUID->"8061ea8e-a47c-4be0-a0bd-f9769205f52e"],
+Cell[10527, 286, 151, 2, 32, "Output",ExpressionUUID->"7e6d8ae9-eff3-4012-8e80-93e7a91b2e47"]
+}, Open  ]],
+Cell[10693, 291, 328, 7, 56, "Text",ExpressionUUID->"9fbe51a5-6cee-497d-ac3e-5c081ea693f1"],
+Cell[11024, 300, 1058, 29, 101, "Input",ExpressionUUID->"681f3f1c-1b9f-45b0-9471-2fd94a78d75a"],
+Cell[CellGroupData[{
+Cell[12107, 333, 323, 7, 48, "Input",ExpressionUUID->"afef138b-dc1f-4350-8aa7-185684506787"],
+Cell[12433, 342, 237, 5, 32, "Output",ExpressionUUID->"34cf95a9-871d-486e-986f-209e0174287c"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12719, 353, 392, 8, 181, "Section",ExpressionUUID->"f8fac34b-f083-429d-8bcb-63af9c5899eb"],
+Cell[13114, 363, 584, 10, 100, "Text",ExpressionUUID->"ceba750c-ef3c-4f28-b4ea-3f4dda4a01fb"],
+Cell[CellGroupData[{
+Cell[13723, 377, 1108, 32, 178, "Input",ExpressionUUID->"fbcc05d5-4c6c-4c48-a6aa-cbaaffcb41d0"],
+Cell[14834, 411, 226, 4, 32, "Output",ExpressionUUID->"1ed9e891-13b4-4d52-981c-6419af6ecb8c"]
+}, Open  ]],
+Cell[15075, 418, 315, 7, 56, "Text",ExpressionUUID->"1a4f07ed-e1b9-41d3-a397-329507d3c658"],
+Cell[CellGroupData[{
+Cell[15415, 429, 468, 11, 66, "Input",ExpressionUUID->"a503da39-e690-43e0-ba21-1a7d272bab48"],
+Cell[15886, 442, 703, 11, 52, "Output",ExpressionUUID->"f508e192-40e1-4184-8f0d-e050975fcb0f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16638, 459, 172, 3, 67, "Section",ExpressionUUID->"acf2e5e3-c289-446e-846d-05ad36976621"],
+Cell[16813, 464, 550, 10, 100, "Text",ExpressionUUID->"fbfed92f-34ac-4ed2-8f44-4a64bdb7fb17"],
+Cell[CellGroupData[{
+Cell[17388, 478, 1421, 37, 215, "Input",ExpressionUUID->"147e4cc3-62bd-4d61-868c-7238f43a3202"],
+Cell[18812, 517, 226, 4, 32, "Output",ExpressionUUID->"a2ab7e6d-537d-4819-b8fd-3e2f33bea6d9"]
+}, Open  ]],
+Cell[19053, 524, 330, 7, 56, "Text",ExpressionUUID->"15ffcfac-fab9-4fc4-baf8-f2e86eae32d2"],
+Cell[CellGroupData[{
+Cell[19408, 535, 2384, 66, 365, "Input",ExpressionUUID->"83c5204f-7ca0-4144-8172-0268771fb19d"],
+Cell[21795, 603, 413, 10, 32, "Output",ExpressionUUID->"e83897e3-d6ef-4216-aa90-fe7cd69be3db"]
+}, Open  ]],
+Cell[22223, 616, 498, 9, 78, "Text",ExpressionUUID->"2dcad48f-84c8-41e0-b8ea-2297a5428b7c"],
+Cell[CellGroupData[{
+Cell[22746, 629, 2940, 82, 514, "Input",ExpressionUUID->"4910bcd1-1acb-4bfd-92e6-5429acf0f590"],
+Cell[25689, 713, 218, 4, 53, "Output",ExpressionUUID->"b9ba49ec-72cd-4780-973b-9af4c9945604"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
