@@ -1,114 +1,1282 @@
-Exercícios computacionais 2: Autômatos Celulares
-1. Verifique a documentação da função CellularAutomaton (e o tutorial relativo a Cellular Automata), observando suas parametrizações possíveis. Em particular, entenda a equivalência entre as seguintes formas:
-------------------------------------------------------------------------------------------------------------------------------------------
-Boolean functions: (e.g., rule 90 as a pure Boolean function: Xor[#1,#3]& , or simply as BooleanFunction[90,3])
-In[7]:= ca1=CellularAutomaton[BooleanFunction[90,3],{{1},0},5]
-ca2=CellularAutomaton[Xor[#1,#3]&,{{1},0},5]
+(* Content-type: application/vnd.wolfram.mathematica *)
 
-Out[7]= {{0,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,1,0,1,0,0,0,0},{0,0,0,1,0,0,0,1,0,0,0},{0,0,1,0,1,0,1,0,1,0,0},{0,1,0,0,0,0,0,0,0,1,0},{1,0,1,0,0,0,0,0,1,0,1}}
-Out[8]= {{0,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,1,0,1,0,0,0,0},{0,0,0,1,0,0,0,1,0,0,0},{0,0,1,0,1,0,1,0,1,0,0},{0,1,0,0,0,0,0,0,0,1,0},{1,0,1,0,0,0,0,0,1,0,1}}
-Ambos ca1 e ca2 geram a mesma saída, utilizando a representação de função booleana.
-------------------------------------------------------------------------------------------------------------------------------------------
-Explicit replacements for neighbourhoods:(e.g., rule 90: {{1,_,1}->0, {1,_,0}->1, {0,_,1}->1, {0,_,0}->0}
-In[9]:= ca3=CellularAutomaton[{{1,_,1}->0,{1,_,0}->1,{0,_,1}->1,{0,_,0}->0},{{1},0},5]
-Out[9]= {{0,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,1,0,1,0,0,0,0},{0,0,0,1,0,0,0,1,0,0,0},{0,0,1,0,1,0,1,0,1,0,0},{0,1,0,0,0,0,0,0,0,1,0},{1,0,1,0,0,0,0,0,1,0,1}}
-ca3 irá gerar a mesma saída que ca1 e ca2, utilizando a representação de substituições explícitas para vizinhanças.
-------------------------------------------------------------------------------------------------------------------------------------------
-Single "algebraic" replacement rule: (e.g., rule 90: {{x_,_,y_} :> Mod[x+y,2]})
-In[10]:= ca4=CellularAutomaton[{{x_,_,y_}:>Mod[x+y,2]},{{1},0},5]
-Out[10]= {{0,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,1,0,1,0,0,0,0},{0,0,0,1,0,0,0,1,0,0,0},{0,0,1,0,1,0,1,0,1,0,0},{0,1,0,0,0,0,0,0,0,1,0},{1,0,1,0,0,0,0,0,1,0,1}}
-ca4 será equivalente aos anteriores, utilizando uma única regra de substituição algébrica.
-------------------------------------------------------------------------------------------------------------------------------------------
-Explicit functions: (e.g., rule 90 as the algebraic function{Mod[#[[1]]+#[[3]],2]&,{},1})
-In[11]:= ca5=CellularAutomaton[{Mod[#[[1]]+#[[3]],2]&,{},1},{{1},0},5]
-Out[11]= {{0,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,1,0,1,0,0,0,0},{0,0,0,1,0,0,0,1,0,0,0},{0,0,1,0,1,0,1,0,1,0,0},{0,1,0,0,0,0,0,0,0,1,0},{1,0,1,0,0,0,0,0,1,0,1}}
-Finalmente, ca5 será equivalente aos anteriores, utilizando a representação de funções explícitas.
-------------------------------------------------------------------------------------------------------------------------------------------
-Visualização
-In[12]:= ArrayPlot[ca1]
-Out[12]= 
-2.Entender o conceito de Second-order rules, definidas como: o próximo estado s\[Not]i no tempo t+1 é função não só de (s\[Not]i-1, s\[Not]i, s\[Not]i+1) no tempo t, mas também de (s\[Not]i-1, s\[Not]i, s\[Not]i+1) no tempo t-1. Em seguida responda: quantas funções existem?
-OBS: A definição está na documentação da função CellularAutomaton.
-As regras de segundo ordem em autômatos celulares são um pouco mais complexas em comparação com as regras de primeiro ordem, uma vez que elas levam em consideração não apenas o estado atual das células vizinhas, mas também seus estados no passo de tempo anterior.
-(*Se temos um autômato celular binário,temos 2^3=8 configurações possíveis no tempo t para três células consecutivas e outras 8 configurações no tempo t-1,dando um total de 8*8=64 configurações diferentes para qualquer regra de segunda ordem.*)(*Para cada uma dessas 64 configurações,a célula i pode ter 2 estados possíveis no tempo t+1. Assim,existiriam 2^64 funções possíveis de segunda ordem para um autômato celular binário.*)
-In[100]:= (*Inicializa a lista de estados*)states={{1,0,1,1,0,0,1},{0,0,1,0,1,1,0}}
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
 
-(*Define a regra de segunda ordem*)
-secondOrderRule[previous_,current_]:=Module[{len=Length[current],next},next=Table[0,{len}];
-For[i=2,i<len,i++,(*Exemplo de uma regra de segunda ordem simples:uma célula será 1 se a célula anterior estiver no estado 1 no tempo t e t-1,e a célula atual estiver no estado 0 no tempo t.*)If[previous[[i-1]]==1&&current[[i-1]]==1&&current[[i]]==0,next[[i]]=1]];
-AppendTo[states,next];
-next]
+(* CreatedBy='Mathematica 13.3' *)
 
-(*Executa a regra de segunda ordem para um número de passos*)
-numberOfSteps=5
-For[i=2,i<=numberOfSteps,i++,secondOrderRule[states[[i]],states[[i]]];]
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     49511,       1274]
+NotebookOptionsPosition[     44194,       1180]
+NotebookOutlinePosition[     44598,       1196]
+CellTagsIndexPosition[     44555,       1193]
+WindowFrame->Normal*)
 
-(*Plota o resultado*)
-MatrixPlot[states,Mesh->True]
-Out[100]= {{1,0,1,1,0,0,1},{0,0,1,0,1,1,0}}
-Out[102]= 5
-Out[104]= 
-Neste exemplo, inicializamos um autômato celular de 7 células com dois estados iniciais diferentes. Então, definimos uma função secondOrderRule que aplica uma regra de segunda ordem específica para gerar o próximo estado baseado nos dois estados anteriores.
+(* Beginning of Notebook Content *)
+Notebook[{
 
-A função secondOrderRule é então aplicada por um número de passos, e os resultados são visualizados com MatrixPlot.
-3.Entender o conceito de regras confinadas (Captive) e analisar sua ocorrência no espaço elementar (i.e., quantas e quais são as regras?). 
-OBS: A definição se encontra no CAMat.nb.
- Um Autômato Celular (CA) é considerado "Captive" quando todos os estados de transição são confinados ao conjunto de estados da vizinhança. Em outras palavras, o novo estado de uma célula deve ser um dos estados das células na vizinhança no tempo anterior.
-(*Com base nesta definição e no código fornecido,podemos analisar todas as 256 regras elementares para determinar quais são "Captive".Para regras elementares em um autômato celular binário,k=2 e r=1,sendo k o número de estados possíveis para uma célula e r o raio da vizinhança. Portanto,vamos analisar regras com vizinhança de três células,onde cada célula pode estar no estado 0 ou 1.*)
-In[119]:= RuleTableFromKAry[kAryRuleTable_,k_Integer:2,r_:1]:=
-MapThread[
-List[#1,#2]&,
-{Tuples[Range[k-1,0,-1],\[LeftFloor]2r+1\[RightFloor]],kAryRuleTable}];
-In[118]:= RuleTable[rnum_Integer,k_Integer: 2,r_: 1]:=RuleTableFromKAry[PadLeft[IntegerDigits[rnum,k],k^(\[LeftCeiling]2r\[RightCeiling]+1)],k,r];
-In[113]:= CaptiveQ[rnum_Integer,k_Integer:2,r_:1]:=If[MemberQ[MemberQ[#[[1]],#[[2]]]&/@RuleTable[rnum,k,r],False],False,True];
-In[120]:= (*Definição de CaptiveQ*)CaptiveQ[rnum_Integer,k_Integer:2,r_:1]:=If[MemberQ[MemberQ[#[[1]],#[[2]]]&/@RuleTable[rnum,k,r],False],False,True];
+Cell[CellGroupData[{
+Cell["Exerc\[IAcute]cios computacionais 2: Aut\[OHat]matos Celulares", "Title",
+ CellChangeTimes->{
+  3.9045498438285484`*^9},ExpressionUUID->"89da95e9-a908-4767-beb9-\
+087c7bea0742"],
 
-(*Lista de todas as regras elementares*)
-elementaryRules=Range[0,255];
+Cell[CellGroupData[{
 
-(*Filtrar regras que são "Captive"*)
-captiveRules=Select[elementaryRules,CaptiveQ];
+Cell["\<\
+1. Verifique a documenta\[CCedilla]\[ATilde]o da fun\[CCedilla]\[ATilde]o \
+CellularAutomaton (e o tutorial relativo a Cellular Automata), observando \
+suas parametriza\[CCedilla]\[OTilde]es poss\[IAcute]veis. Em particular, \
+entenda a equival\[EHat]ncia entre as seguintes formas:\
+\>", "Section",
+ CellChangeTimes->{{3.9045498630979986`*^9, 
+  3.9045498653531046`*^9}},ExpressionUUID->"77ac4060-98f7-446a-9942-\
+2eca6b1df2e5"],
 
-(*Mostra as regras "Captive"*)
-captiveRules
-Out[123]= {128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198,200,202,204,206,208,210,212,214,216,218,220,222,224,226,228,230,232,234,236,238,240,242,244,246,248,250,252,254}
-Regras confinadas (ou "Captive") em autômatos celulares são aquelas em que as transições de estado de uma célula devem respeitar uma condição específica: o estado futuro da célula deve ser um dos estados presentes na sua vizinhança. Isto é, se considerarmos uma célula e suas células vizinhas, o próximo estado da célula central deve obrigatoriamente ser um dos estados das células na sua vizinhança no tempo t.
-Após rodar o código que filtra as regras "Captive" do conjunto de todas as regras elementares possíveis (0 a 255), foram encontradas várias regras que satisfazem a condição "Captive". As regras que são "Captive" dentro do espaço elementar são:
-{128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198,200,202,204,206,208,210,212,214,216,218,220,222,224,226,228,230,232,234,236,238,240,242,244,246,248,250,252,254}
-Isso significa que, no contexto de autômatos celulares binários (onde cada célula tem 2 estados possíveis, 0 ou 1) e no espaço de regras elementares (regras 0 a 255), essas são as regras que seguem o critério de serem "Captive", ou seja, o estado seguinte de cada célula é sempre um dos estados presentes em sua vizinhança no tempo anterior.
-4.Entender o conceito de regras com um estado de espalhamento (Spreading) e analisar sua ocorrência nos espaços elementar e de raio 1.5.
-OBS: A definição se encontra no CAMat.nb.
-O conceito de um estado de espalhamento (Spreading State) em Autômatos Celulares refere-se a uma configuração em que um estado específico, denominado estado de espalhamento, tem a propriedade de se propagar pela vizinhança quando presente, e não pode ser o resultado de uma transição de estado quando ausente.
-In[126]:= RuleTablePartitioned[rnum_Integer,k_Integer:2,r_:1]:={#[[1]]&/@#,#[[1,2]]}&/@Reverse[SortBy[GatherBy[RuleTable[rnum,k,r],#[[2]]&],#[[1,-1]]&]];
-In[127]:= SpreadingStateQ[rnum_Integer,k_Integer:2,r_:1]:=
-MemberQ[Module[{outState=#[[2]]},
-{Union[MemberQ[#,outState]&/@#[[1]]],
-Union[\[Not]MemberQ[#,outState]&/@Complement[Tuples[Range[0,k-1],\[LeftFloor]2r+1\[RightFloor]],#[[1]]]]}]&
-/@RuleTablePartitioned[rnum,k,r],{{True},{True}}];
+Cell[TextData[{
+ StyleBox["Boolean functions:",
+  FontWeight->"Bold"],
+ " (e.g., rule 90 as a pure Boolean function: Xor[#1,#3]& , or simply as \
+BooleanFunction[90,3])"
+}], "Text",
+ CellChangeTimes->{{3.9045498773884077`*^9, 3.90454987929414*^9}, {
+  3.9045499475059223`*^9, 
+  3.9045499584174213`*^9}},ExpressionUUID->"fd61fa0c-fb87-4196-b6fe-\
+56a34f8a96ad"],
 
-SpreadingState[rnum_Integer,k_Integer:2,r_:1]:=
-Module[{pos=Position[Module[{outState=#[[2]]},
-{
-Union[MemberQ[#,outState]&/@#[[1]]],
-Union[\[Not]MemberQ[#,outState]&/@Complement[Tuples[Range[0,k-1],\[LeftFloor]2r+1\[RightFloor]],#[[1]]]]
-}]&/@Reverse@RuleTablePartitioned[rnum,k,r],{{True},{True}}]},
-If[pos!={},pos[[1,1]]-1,{}]];
-(*Verificar a existência de um estado de espalhamento na regra 128*)
-SpreadingStateQ[128] (*Retorna:True*)
-(*Verificar a existência de um estado de espalhamento na regra 127*)
-SpreadingStateQ[127] (*Retorna:False*)
-(*Verificar a existência de um estado de espalhamento na regra 19485 com k=3 e r=0.5*)
-SpreadingStateQ[19485,3,0.5] (*Retorna:True*)
-(*Encontrar a posição do estado de espalhamento para a regra 128*)
-SpreadingState[128]
-(*Se retornar n,isso significa que o n-ésimo elemento da tabela de regras é um estado de espalhamento*)
-Out[154]= True
-Out[155]= False
-Out[156]= True
-Out[157]= 0
-Análise no Espaço Elementar e de Raio 1.5
-In[133]:= (*Analisar estados de espalhamento no espaço elementar*)
-elementarySpreadingStates=Select[Range[0,255],SpreadingStateQ]
+Cell[CellGroupData[{
 
-(*Para o espaço de raio 1.5,você precisa determinar o conjunto de regras apropriado com base em k e r,e então aplicar uma abordagem semelhante*)
-Out[133]= {128,254}
+Cell[BoxData[{
+ RowBox[{"ca1", "=", 
+  RowBox[{"CellularAutomaton", "[", 
+   RowBox[{
+    RowBox[{"BooleanFunction", "[", 
+     RowBox[{"90", ",", "3"}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", "0"}], "}"}], ",", "5"}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ca2", "=", 
+  RowBox[{"CellularAutomaton", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Xor", "[", 
+      RowBox[{"#1", ",", "#3"}], "]"}], "&"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", "0"}], "}"}], ",", "5"}], 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9045498860259204`*^9, 3.904549895492626*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"072a063a-a74c-468b-a498-ef6a2e7c2cb5"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "1",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "1", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "1", ",", "0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9045498968358474`*^9},
+ CellLabel->"Out[1]=",ExpressionUUID->"c6dcfb7e-e710-476e-bd82-7ee6043c2c81"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "1",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "1", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "1", ",", "0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.904549896853035*^9},
+ CellLabel->"Out[2]=",ExpressionUUID->"fbebf9d8-57c7-45d1-adaf-e2ef4cda84bc"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Ambos ca1 e ca2 geram a mesma sa\[IAcute]da, utilizando a representa\
+\[CCedilla]\[ATilde]o de fun\[CCedilla]\[ATilde]o booleana.\n",
+ StyleBox["Explicit replacements for neighbourhoods:",
+  FontWeight->"Bold"],
+ "(e.g., rule 90: {{1,_,1}->0, {1,_,0}->1, {0,_,1}->1, {0,_,0}->0}"
+}], "Text",
+ CellChangeTimes->{{3.9045499102151847`*^9, 3.9045499120964017`*^9}, {
+  3.9045499838757834`*^9, 
+  3.9045499922838955`*^9}},ExpressionUUID->"8a1b506f-9046-4f56-b366-\
+76fe432cba8f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ca3", "=", 
+  RowBox[{"CellularAutomaton", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "_", ",", "1"}], "}"}], "->", "0"}], ",", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "_", ",", "0"}], "}"}], "->", "1"}], ",", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "_", ",", "1"}], "}"}], "->", "1"}], ",", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "_", ",", "0"}], "}"}], "->", "0"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", "0"}], "}"}], ",", "5"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.904550003733281*^9, 3.9045500098714647`*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"613a361f-0278-48b8-b64a-999ec08c19bf"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "1",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "1", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "1", ",", "0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9045500107028008`*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"7b9c6d56-45da-4754-9d6a-7f1043533a91"]
+}, Open  ]],
+
+Cell[TextData[{
+ "ca3 gera a mesma sa\[IAcute]da que ca1 e ca2, utilizando a representa\
+\[CCedilla]\[ATilde]o de substitui\[CCedilla]\[OTilde]es expl\[IAcute]citas \
+para vizinhan\[CCedilla]as.\n",
+ StyleBox["Single \[OpenCurlyDoubleQuote]algebraic\[CloseCurlyDoubleQuote] \
+replacement rule:",
+  FontWeight->"Bold"],
+ " (e.g., rule 90: {{x_,_,y_} :> Mod[x+y,2]})"
+}], "Text",
+ CellChangeTimes->{{3.904550021607168*^9, 
+  3.9045500454952245`*^9}},ExpressionUUID->"364f8509-7af9-4611-bbff-\
+b932734ecc70"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ca4", "=", 
+  RowBox[{"CellularAutomaton", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"x_", ",", "_", ",", "y_"}], "}"}], ":>", 
+      RowBox[{"Mod", "[", 
+       RowBox[{
+        RowBox[{"x", "+", "y"}], ",", "2"}], "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", "0"}], "}"}], ",", "5"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.904550055566128*^9, 3.904550055566128*^9}},
+ CellLabel->"In[4]:=",ExpressionUUID->"a0799531-eb53-4518-a78f-7ae74ba15e57"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "1",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "1", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "1", ",", "0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.904550056765272*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"f1e07463-70f8-4f72-904b-b54ff570ac4a"]
+}, Open  ]],
+
+Cell[TextData[{
+ "ca4 \[EAcute] equivalente aos anteriores, utilizando uma \[UAcute]nica \
+regra de substitui\[CCedilla]\[ATilde]o alg\[EAcute]brica.\n",
+ StyleBox["Explicit functions:",
+  FontWeight->"Bold"],
+ " (e.g., rule 90 as the algebraic function{Mod[#[[1]]+#[[3]],2]&,{},1})"
+}], "Text",
+ CellChangeTimes->{{3.9045500657332444`*^9, 
+  3.9045500773383837`*^9}},ExpressionUUID->"09682a8b-0168-4b49-9205-\
+b4b364fb3a58"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ca5", "=", 
+  RowBox[{"CellularAutomaton", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mod", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "+", 
+          RowBox[{"#", "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], ",", "2"}], "]"}], "&"}], ",", 
+      RowBox[{"{", "}"}], ",", "1"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", "0"}], "}"}], ",", "5"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.904550104035589*^9, 3.904550104035589*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"6162e91c-db26-4744-8cd3-3bdc44577a0a"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "1",
+      ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0",
+      ",", "1", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "1", ",", "0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9045501050732903`*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"0c4ff1c2-76f8-45a6-b83d-11f426028cd1"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Finalmente, ca5 \[EAcute] equivalente aos anteriores, utilizando a \
+representa\[CCedilla]\[ATilde]o de fun\[CCedilla]\[OTilde]es \
+expl\[IAcute]citas.\n",
+ StyleBox["Visualiza\[CCedilla]\[ATilde]o",
+  FontWeight->"Bold"]
+}], "Text",
+ CellChangeTimes->{{3.9045501137128525`*^9, 
+  3.9045501243826413`*^9}},ExpressionUUID->"c8896c75-0c2f-4970-a97d-\
+1ac0e14a01e4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ArrayPlot", "[", "ca1", "]"}]], "Input",
+ CellChangeTimes->{{3.904550131681944*^9, 3.904550131681944*^9}},
+ CellLabel->"In[6]:=",ExpressionUUID->"c5bb425b-ad05-4657-8e0b-0ce2a6836314"],
+
+Cell[BoxData[
+ GraphicsBox[
+  RasterBox[{{0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0}, {1, 0, 1, 1, 1, 1, 1, 1, 1, 0,
+    1}, {1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1}, {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 
+   1}, {1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 
+   1}}, {{0, 0}, {11, 6}}, {0, 1}],
+  Frame->Automatic,
+  FrameLabel->{None, None},
+  FrameTicks->{{None, None}, {None, None}},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  Method->{
+   "GridLinesInFront" -> True, "DefaultBoundaryStyle" -> Automatic, 
+    "DefaultGraphicsInteraction" -> {
+     "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+      "Effects" -> {
+       "Highlight" -> {"ratio" -> 2}, "HighlightPoint" -> {"ratio" -> 2}, 
+        "Droplines" -> {
+         "freeformCursorMode" -> True, 
+          "placement" -> {"x" -> "All", "y" -> "None"}}}}, "DefaultPlotStyle" -> 
+    Automatic}]], "Output",
+ CellChangeTimes->{3.9045501330854635`*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"1b966edf-0987-4539-8adc-6156fb4590b5"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+2.Entender o conceito de Second-order rules, definidas como: o \
+pr\[OAcute]ximo estado s\[Not]i no tempo t+1 \[EAcute] \
+fun\[CCedilla]\[ATilde]o n\[ATilde]o s\[OAcute] de (s\[Not]i-1, s\[Not]i, s\
+\[Not]i+1) no tempo t, mas tamb\[EAcute]m de (s\[Not]i-1, s\[Not]i, \
+s\[Not]i+1) no tempo t-1. Em seguida responda: quantas \
+fun\[CCedilla]\[OTilde]es existem?
+OBS: A defini\[CCedilla]\[ATilde]o est\[AAcute] na documenta\[CCedilla]\
+\[ATilde]o da fun\[CCedilla]\[ATilde]o CellularAutomaton.\
+\>", "Section",
+ CellChangeTimes->{
+  3.904550148174588*^9},ExpressionUUID->"325150df-9946-484f-9675-\
+008650cfcbd3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Se", " ", "temos", " ", "um", " ", "aut\[OHat]mato", " ", "celular", " ",
+      "bin\[AAcute]rio"}], ",", 
+    RowBox[{
+     RowBox[{"temos", " ", 
+      RowBox[{"2", "^", "3"}]}], "=", 
+     RowBox[{
+      RowBox[{
+      "8", " ", "configura\[CCedilla]\[OTilde]es", " ", "poss\[IAcute]veis", 
+       " ", "no", " ", "tempo", " ", "t", " ", "para", " ", "tr\[EHat]s", " ",
+        "c\[EAcute]lulas", " ", "consecutivas", " ", "e", " ", "outras", " ", 
+       "8", " ", "configura\[CCedilla]\[OTilde]es", " ", "no", " ", "tempo", 
+       " ", "t"}], "-", "1"}]}], ",", 
+    RowBox[{
+     RowBox[{
+     "dando", " ", "um", " ", "total", " ", "de", " ", "8", "*", "8"}], "=", 
+     RowBox[{
+     "64", " ", "configura\[CCedilla]\[OTilde]es", " ", "diferentes", " ", 
+      "para", " ", "qualquer", " ", "regra", " ", "de", " ", "segunda", " ", 
+      RowBox[{"ordem", "."}]}]}]}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Para", " ", "cada", " ", "uma", " ", "dessas", " ", "64", " ", 
+     "configura\[CCedilla]\[OTilde]es"}], ",", 
+    RowBox[{
+     RowBox[{
+     "a", " ", "c\[EAcute]lula", " ", "i", " ", "pode", " ", "ter", " ", "2", 
+      " ", "estados", " ", "poss\[IAcute]veis", " ", "no", " ", "tempo", " ", 
+      "t"}], "+", 
+     RowBox[{"1.", " ", "Assim"}]}], ",", 
+    RowBox[{"existiriam", " ", 
+     RowBox[{"2", "^", "64"}], " ", "fun\[CCedilla]\[OTilde]es", " ", 
+     "poss\[IAcute]veis", " ", "de", " ", "segunda", " ", "ordem", " ", 
+     "para", " ", "um", " ", "aut\[OHat]mato", " ", "celular", " ", 
+     RowBox[{"bin\[AAcute]rio", "."}]}]}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Inicializa", " ", "a", " ", "lista", " ", "de", " ", "estados"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"states", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "1", ",", "0", ",", "1", ",", "1", ",", "0", ",", "0", ",", "1"}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "1", ",", "0"}], 
+      "}"}]}], "}"}]}]}]], "Input",
+ CellChangeTimes->{{3.9045501584076986`*^9, 3.904550172252718*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"0cb93c07-3646-4c0a-8bdc-229bc345e6d1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "0", ",", "0", ",", "1"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "1", ",", "0"}],
+     "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.904550172772889*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"8f6a8dee-744b-46fa-8291-02c78bfd05d6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Define", " ", "a", " ", "regra", " ", "de", " ", "segunda", " ", 
+    "ordem"}], "*)"}], "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"secondOrderRule", "[", 
+     RowBox[{"previous_", ",", "current_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"len", "=", 
+         RowBox[{"Length", "[", "current", "]"}]}], ",", "next"}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"next", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{"0", ",", 
+          RowBox[{"{", "len", "}"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "2"}], ",", 
+         RowBox[{"i", "<", "len"}], ",", 
+         RowBox[{"i", "++"}], ",", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+           "Exemplo", " ", "de", " ", "uma", " ", "regra", " ", "de", " ", 
+            "segunda", " ", "ordem", " ", 
+            RowBox[{"simples", ":", 
+             RowBox[{
+              RowBox[{
+              "uma", " ", "c\[EAcute]lula", " ", "ser\[AAcute]", " ", "1", 
+               " ", "se", " ", "a", " ", "c\[EAcute]lula", " ", "anterior", 
+               " ", "estiver", " ", "no", " ", "estado", " ", "1", " ", "no", 
+               " ", "tempo", " ", "t", " ", "e", " ", "t"}], "-", "1"}]}]}], 
+           ",", 
+           RowBox[{
+           "e", " ", "a", " ", "c\[EAcute]lula", " ", "atual", " ", "estiver",
+             " ", "no", " ", "estado", " ", "0", " ", "no", " ", "tempo", " ", 
+            RowBox[{"t", "."}]}]}], "*)"}], 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"previous", "[", 
+              RowBox[{"[", 
+               RowBox[{"i", "-", "1"}], "]"}], "]"}], "==", "1"}], "&&", 
+            RowBox[{
+             RowBox[{"current", "[", 
+              RowBox[{"[", 
+               RowBox[{"i", "-", "1"}], "]"}], "]"}], "==", "1"}], "&&", 
+            RowBox[{
+             RowBox[{"current", "[", 
+              RowBox[{"[", "i", "]"}], "]"}], "==", "0"}]}], ",", 
+           RowBox[{
+            RowBox[{"next", "[", 
+             RowBox[{"[", "i", "]"}], "]"}], "=", "1"}]}], "]"}]}], "]"}], 
+       ";", "\n", 
+       RowBox[{"AppendTo", "[", 
+        RowBox[{"states", ",", "next"}], "]"}], ";", "\n", "next"}]}], 
+     "]"}]}], "\n", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Executa", " ", "a", " ", "regra", " ", "de", " ", "segunda", " ", 
+     "ordem", " ", "para", " ", "um", " ", "n\[UAcute]mero", " ", "de", " ", 
+     "passos"}], "*)"}], "\n", 
+   RowBox[{"numberOfSteps", "=", "5"}], "\n", 
+   RowBox[{"For", "[", 
+    RowBox[{
+     RowBox[{"i", "=", "2"}], ",", 
+     RowBox[{"i", "<=", "numberOfSteps"}], ",", 
+     RowBox[{"i", "++"}], ",", 
+     RowBox[{
+      RowBox[{"secondOrderRule", "[", 
+       RowBox[{
+        RowBox[{"states", "[", 
+         RowBox[{"[", "i", "]"}], "]"}], ",", 
+        RowBox[{"states", "[", 
+         RowBox[{"[", "i", "]"}], "]"}]}], "]"}], ";"}]}], "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Plota", " ", "o", " ", "resultado"}], "*)"}], 
+   RowBox[{"MatrixPlot", "[", 
+    RowBox[{"states", ",", 
+     RowBox[{"Mesh", "->", "True"}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.9045501870842485`*^9, 3.90455019502283*^9}},
+ CellLabel->"In[8]:=",ExpressionUUID->"8571b59b-a066-469d-bdc4-b732bc1fe191"],
+
+Cell[BoxData["5"], "Output",
+ CellChangeTimes->{3.9045501959853497`*^9},
+ CellLabel->"Out[9]=",ExpressionUUID->"5e0e83fc-d486-4c53-8f67-82915df0d284"],
+
+Cell[BoxData[
+ GraphicsBox[{RasterBox[CompressedData["
+1:eJxTTMoPSmVmYGAAYXYoDQEf7KlFP6wSWef+8JY9Awqgnvm0dg8u9dQyh9b2
+Ems+AHZxXEs=
+    "], {{0, 0}, {7, 3}}, {0, 1}], {
+    {GrayLevel[
+      NCache[-1 + GoldenRatio, 0.6180339887498949]], 
+     StyleBox[
+      LineBox[{{{0, 3}, {7, 3}}, {{0, 2}, {7, 2}}, {{0, 1}, {7, 1}}, {{0, 
+       0}, {7, 0}}}],
+      Antialiasing->False]}, 
+    {GrayLevel[
+      NCache[-1 + GoldenRatio, 0.6180339887498949]], 
+     StyleBox[
+      LineBox[{{{0, 0}, {0, 3}}, {{1, 0}, {1, 3}}, {{2, 0}, {2, 3}}, {{3, 
+       0}, {3, 3}}, {{4, 0}, {4, 3}}, {{5, 0}, {5, 3}}, {{6, 0}, {6, 3}}, {{7,
+        0}, {7, 3}}}],
+      Antialiasing->False]}}},
+  Frame->True,
+  FrameLabel->{None, None},
+  FrameTicks->{{{{2.5, 
+       FormBox["1", TraditionalForm]}, {1.5, 
+       FormBox["2", TraditionalForm]}, {0.5, 
+       FormBox["3", TraditionalForm]}}, {{2.5, 
+       FormBox["1", TraditionalForm]}, {1.5, 
+       FormBox["2", TraditionalForm]}, {0.5, 
+       FormBox["3", TraditionalForm]}}}, {{{0.5, 
+       FormBox["1", TraditionalForm]}, {1.5, 
+       FormBox["2", TraditionalForm]}, {2.5, 
+       FormBox["3", TraditionalForm]}, {3.5, 
+       FormBox["4", TraditionalForm]}, {4.5, 
+       FormBox["5", TraditionalForm]}, {5.5, 
+       FormBox["6", TraditionalForm]}, {6.5, 
+       FormBox["7", TraditionalForm]}}, {{0.5, 
+       FormBox["1", TraditionalForm]}, {1.5, 
+       FormBox["2", TraditionalForm]}, {2.5, 
+       FormBox["3", TraditionalForm]}, {3.5, 
+       FormBox["4", TraditionalForm]}, {4.5, 
+       FormBox["5", TraditionalForm]}, {5.5, 
+       FormBox["6", TraditionalForm]}, {6.5, 
+       FormBox["7", TraditionalForm]}}}},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  Method->{
+   "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+    "DefaultBoundaryStyle" -> Automatic, 
+    "DefaultGraphicsInteraction" -> {
+     "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+      "Effects" -> {
+       "Highlight" -> {"ratio" -> 2}, "HighlightPoint" -> {"ratio" -> 2}, 
+        "Droplines" -> {
+         "freeformCursorMode" -> True, 
+          "placement" -> {"x" -> "All", "y" -> "None"}}}}, "DefaultPlotStyle" -> 
+    Automatic, "DomainPadding" -> Scaled[0.02], "RangePadding" -> 
+    Scaled[0.05]}]], "Output",
+ CellChangeTimes->{3.904550196049268*^9},
+ CellLabel->"Out[11]=",ExpressionUUID->"77617012-5855-4dc3-88d4-f978b0fc291a"]
+}, Open  ]],
+
+Cell["\<\
+Neste exemplo, inicializamos um aut\[OHat]mato celular de 7 c\[EAcute]lulas \
+com dois estados iniciais diferentes. Ent\[ATilde]o, definimos uma fun\
+\[CCedilla]\[ATilde]o secondOrderRule que aplica uma regra de segunda ordem \
+espec\[IAcute]fica para gerar o pr\[OAcute]ximo estado baseado nos dois \
+estados anteriores. A fun\[CCedilla]\[ATilde]o secondOrderRule \[EAcute] ent\
+\[ATilde]o aplicada por um n\[UAcute]mero de passos, e os resultados s\
+\[ATilde]o visualizados com MatrixPlot.\
+\>", "Text",
+ CellChangeTimes->{{3.9045502526727653`*^9, 
+  3.9045502670681887`*^9}},ExpressionUUID->"7180dc33-6237-48c9-b814-\
+884d2c44ce64"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+3.Entender o conceito de regras confinadas (Captive) e analisar sua ocorr\
+\[EHat]ncia no espa\[CCedilla]o elementar (i.e., quantas e quais s\[ATilde]o \
+as regras?). 
+OBS: A defini\[CCedilla]\[ATilde]o se encontra no CAMat.nb.\
+\>", "Section",
+ CellChangeTimes->{
+  3.9045502731174183`*^9},ExpressionUUID->"e8620239-3feb-41ca-9614-\
+f164e13484ff"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+ Um Aut\[OHat]mato Celular (CA) \[EAcute] considerado \
+\[OpenCurlyDoubleQuote]Captive\[CloseCurlyDoubleQuote] quando todos os \
+estados de transi\[CCedilla]\[ATilde]o s\[ATilde]o confinados ao conjunto de \
+estados da vizinhan\[CCedilla]a. Em outras palavras, o novo estado de uma c\
+\[EAcute]lula deve ser um dos estados das c\[EAcute]lulas na vizinhan\
+\[CCedilla]a no tempo anterior.\
+\>", "Subsection",
+ CellChangeTimes->{{3.9045504385721817`*^9, 
+  3.904550439638971*^9}},ExpressionUUID->"c7291a5a-56d2-40fd-b926-\
+1db780537d52"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Com", " ", "base", " ", "nesta", " ", "defini\[CCedilla]\[ATilde]o", " ",
+      "e", " ", "no", " ", "c\[OAcute]digo", " ", "fornecido"}], ",", 
+    RowBox[{
+    "podemos", " ", "analisar", " ", "todas", " ", "as", " ", "256", " ", 
+     "regras", " ", "elementares", " ", "para", " ", "determinar", " ", 
+     "quais", " ", "s\[ATilde]o", " ", 
+     RowBox[{"\"\<Captive\>\"", ".", "Para"}], " ", "regras", " ", 
+     "elementares", " ", "em", " ", "um", " ", "aut\[OHat]mato", " ", 
+     "celular", " ", "bin\[AAcute]rio"}], ",", 
+    RowBox[{"k", "=", 
+     RowBox[{
+      RowBox[{"2", " ", "e", " ", "r"}], "=", "1"}]}], ",", 
+    RowBox[{
+    "sendo", " ", "k", " ", "o", " ", "n\[UAcute]mero", " ", "de", " ", 
+     "estados", " ", "poss\[IAcute]veis", " ", "para", " ", "uma", " ", 
+     "c\[EAcute]lula", " ", "e", " ", "r", " ", "o", " ", "raio", " ", "da", 
+     " ", 
+     RowBox[{"vizinhan\[CCedilla]a", ".", " ", "Portanto"}]}], ",", 
+    RowBox[{
+    "vamos", " ", "analisar", " ", "regras", " ", "com", " ", 
+     "vizinhan\[CCedilla]a", " ", "de", " ", "tr\[EHat]s", " ", 
+     "c\[EAcute]lulas"}], ",", 
+    RowBox[{
+    "onde", " ", "cada", " ", "c\[EAcute]lula", " ", "pode", " ", "estar", 
+     " ", "no", " ", "estado", " ", "0", " ", "ou", " ", "1."}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"RuleTableFromKAry", "[", 
+     RowBox[{"kAryRuleTable_", ",", 
+      RowBox[{"k_Integer", ":", "2"}], ",", 
+      RowBox[{"r_", ":", "1"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+    RowBox[{"MapThread", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"List", "[", 
+        RowBox[{"#1", ",", "#2"}], "]"}], "&"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Tuples", "[", 
+         RowBox[{
+          RowBox[{"Range", "[", 
+           RowBox[{
+            RowBox[{"k", "-", "1"}], ",", "0", ",", 
+            RowBox[{"-", "1"}]}], "]"}], ",", 
+          RowBox[{"\[LeftFloor]", 
+           RowBox[{
+            RowBox[{"2", "r"}], "+", "1"}], "\[RightFloor]"}]}], "]"}], ",", 
+        "kAryRuleTable"}], "}"}]}], "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.904550279918304*^9, 3.9045503058714457`*^9}, 
+   3.9045504452766647`*^9, {3.904550494879945*^9, 
+   3.904550549740559*^9}},ExpressionUUID->"ff795f75-d567-4f36-b3bf-\
+fd9fd27e0c04"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"RuleTable", "[", 
+    RowBox[{"rnum_Integer", ",", 
+     RowBox[{"k_Integer", ":", "2"}], ",", 
+     RowBox[{"r_", ":", "1"}]}], "]"}], ":=", 
+   RowBox[{"RuleTableFromKAry", "[", 
+    RowBox[{
+     RowBox[{"PadLeft", "[", 
+      RowBox[{
+       RowBox[{"IntegerDigits", "[", 
+        RowBox[{"rnum", ",", "k"}], "]"}], ",", 
+       RowBox[{"k", "^", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"\[LeftCeiling]", 
+           RowBox[{"2", "r"}], "\[RightCeiling]"}], "+", "1"}], ")"}]}]}], 
+      "]"}], ",", "k", ",", "r"}], "]"}]}], ";"}]], "Input",
+ CellLabel->"In[23]:=",ExpressionUUID->"e01bbd62-1218-4de7-949b-3515a971904c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"CaptiveQ", "[", 
+    RowBox[{"rnum_Integer", ",", 
+     RowBox[{"k_Integer", ":", "2"}], ",", 
+     RowBox[{"r_", ":", "1"}]}], "]"}], ":=", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"MemberQ", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"MemberQ", "[", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", 
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}]}], "]"}], "&"}], "/@", 
+        RowBox[{"RuleTable", "[", 
+         RowBox[{"rnum", ",", "k", ",", "r"}], "]"}]}], ",", "False"}], "]"}],
+      ",", "False", ",", "True"}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.9045505582773905`*^9, 3.9045505582773905`*^9}},
+ CellLabel->"In[24]:=",ExpressionUUID->"5cec759c-caf8-460e-9cef-c33d51cba1e9"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Defini\[CCedilla]\[ATilde]o", " ", "de", " ", "CaptiveQ"}], 
+   "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"CaptiveQ", "[", 
+     RowBox[{"rnum_Integer", ",", 
+      RowBox[{"k_Integer", ":", "2"}], ",", 
+      RowBox[{"r_", ":", "1"}]}], "]"}], ":=", 
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"MemberQ", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"MemberQ", "[", 
+           RowBox[{
+            RowBox[{"#", "[", 
+             RowBox[{"[", "1", "]"}], "]"}], ",", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}], "]"}], "&"}], "/@", 
+         RowBox[{"RuleTable", "[", 
+          RowBox[{"rnum", ",", "k", ",", "r"}], "]"}]}], ",", "False"}], 
+       "]"}], ",", "False", ",", "True"}], "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9045505672564273`*^9, 3.9045505672564273`*^9}},
+ CellLabel->"In[25]:=",ExpressionUUID->"80c42d88-77fb-4cde-87bc-534189dc8106"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Lista", " ", "de", " ", "todas", " ", "as", " ", "regras", " ", 
+    "elementares"}], "*)"}], "\n", 
+  RowBox[{
+   RowBox[{"elementaryRules", "=", 
+    RowBox[{"Range", "[", 
+     RowBox[{"0", ",", "255"}], "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9045505764010468`*^9, 3.9045505764010468`*^9}},
+ CellLabel->"In[26]:=",ExpressionUUID->"a3f5ba5b-86a8-40a2-9d21-f60c25e0e828"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Filtrar", " ", "regras", " ", "que", " ", "s\[ATilde]o", " ", 
+    "\"\<Captive\>\""}], "*)"}], "\n", 
+  RowBox[{
+   RowBox[{"captiveRules", "=", 
+    RowBox[{"Select", "[", 
+     RowBox[{"elementaryRules", ",", "CaptiveQ"}], "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.904550585805975*^9, 3.904550585805975*^9}},
+ CellLabel->"In[27]:=",ExpressionUUID->"fe8963f1-7da3-41f2-9d05-4e6404cafed4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Mostra", " ", "as", " ", "regras", " ", "\"\<Captive\>\""}], 
+   "*)"}], "\n", "captiveRules"}]], "Input",
+ CellChangeTimes->{{3.904550593174425*^9, 3.904550593174425*^9}},
+ CellLabel->"In[28]:=",ExpressionUUID->"aaf7ff41-5a9d-407c-9171-83d584cd97db"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "128", ",", "130", ",", "132", ",", "134", ",", "136", ",", "138", ",", 
+   "140", ",", "142", ",", "144", ",", "146", ",", "148", ",", "150", ",", 
+   "152", ",", "154", ",", "156", ",", "158", ",", "160", ",", "162", ",", 
+   "164", ",", "166", ",", "168", ",", "170", ",", "172", ",", "174", ",", 
+   "176", ",", "178", ",", "180", ",", "182", ",", "184", ",", "186", ",", 
+   "188", ",", "190", ",", "192", ",", "194", ",", "196", ",", "198", ",", 
+   "200", ",", "202", ",", "204", ",", "206", ",", "208", ",", "210", ",", 
+   "212", ",", "214", ",", "216", ",", "218", ",", "220", ",", "222", ",", 
+   "224", ",", "226", ",", "228", ",", "230", ",", "232", ",", "234", ",", 
+   "236", ",", "238", ",", "240", ",", "242", ",", "244", ",", "246", ",", 
+   "248", ",", "250", ",", "252", ",", "254"}], "}"}]], "Output",
+ CellChangeTimes->{3.904550593946622*^9},
+ CellLabel->"Out[28]=",ExpressionUUID->"1cc7fe1a-0c19-49b8-9361-d34a8eaa4bd3"]
+}, Open  ]],
+
+Cell["\<\
+Regras confinadas (ou \[OpenCurlyDoubleQuote]Captive\[CloseCurlyDoubleQuote]) \
+em aut\[OHat]matos celulares s\[ATilde]o aquelas em que as transi\[CCedilla]\
+\[OTilde]es de estado de uma c\[EAcute]lula devem respeitar uma condi\
+\[CCedilla]\[ATilde]o espec\[IAcute]fica: o estado futuro da c\[EAcute]lula \
+deve ser um dos estados presentes na sua vizinhan\[CCedilla]a. Isto \
+\[EAcute], se considerarmos uma c\[EAcute]lula e suas c\[EAcute]lulas \
+vizinhas, o pr\[OAcute]ximo estado da c\[EAcute]lula central deve \
+obrigatoriamente ser um dos estados das c\[EAcute]lulas na sua vizinhan\
+\[CCedilla]a no tempo t.
+Ap\[OAcute]s rodar o c\[OAcute]digo que filtra as regras \
+\[OpenCurlyDoubleQuote]Captive\[CloseCurlyDoubleQuote] do conjunto de todas \
+as regras elementares poss\[IAcute]veis (0 a 255), foram encontradas v\
+\[AAcute]rias regras que satisfazem a condi\[CCedilla]\[ATilde]o \
+\[OpenCurlyDoubleQuote]Captive\[CloseCurlyDoubleQuote]. As regras que s\
+\[ATilde]o \[OpenCurlyDoubleQuote]Captive\[CloseCurlyDoubleQuote] dentro do \
+espa\[CCedilla]o elementar s\[ATilde]o:
+{128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,\
+166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,196,198,200,202,\
+204,206,208,210,212,214,216,218,220,222,224,226,228,230,232,234,236,238,240,\
+242,244,246,248,250,252,254}
+Isso significa que, no contexto de aut\[OHat]matos celulares bin\[AAcute]rios \
+(onde cada c\[EAcute]lula tem 2 estados poss\[IAcute]veis, 0 ou 1) e no espa\
+\[CCedilla]o de regras elementares (regras 0 a 255), essas s\[ATilde]o as \
+regras que seguem o crit\[EAcute]rio de serem \[OpenCurlyDoubleQuote]Captive\
+\[CloseCurlyDoubleQuote], ou seja, o estado seguinte de cada c\[EAcute]lula \
+\[EAcute] sempre um dos estados presentes em sua vizinhan\[CCedilla]a no \
+tempo anterior.\
+\>", "Text",
+ CellChangeTimes->{
+  3.904550616289979*^9},ExpressionUUID->"4f897874-ad40-481d-b2e1-\
+f9ddb8edf7ee"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+4.Entender o conceito de regras com um estado de espalhamento (Spreading) e \
+analisar sua ocorr\[EHat]ncia nos espa\[CCedilla]os elementar e de raio 1.5.
+OBS: A defini\[CCedilla]\[ATilde]o se encontra no CAMat.nb.\
+\>", "Section",
+ CellChangeTimes->{
+  3.9045506341052732`*^9},ExpressionUUID->"aba23b83-1ae7-409a-842d-\
+9a930aa25ad4"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+O conceito de um estado de espalhamento (Spreading State) em Aut\[OHat]matos \
+Celulares refere-se a uma configura\[CCedilla]\[ATilde]o em que um estado \
+espec\[IAcute]fico, denominado estado de espalhamento, tem a propriedade de \
+se propagar pela vizinhan\[CCedilla]a quando presente, e n\[ATilde]o pode ser \
+o resultado de uma transi\[CCedilla]\[ATilde]o de estado quando ausente.\
+\>", "Subsection",
+ CellChangeTimes->{{3.9045506437893353`*^9, 
+  3.904550645363944*^9}},ExpressionUUID->"b3b60589-cd36-456d-8b8f-\
+fe740156ab17"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"RuleTablePartitioned", "[", 
+    RowBox[{"rnum_Integer", ",", 
+     RowBox[{"k_Integer", ":", "2"}], ",", 
+     RowBox[{"r_", ":", "1"}]}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"#", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "&"}], "/@", "#"}], ",", 
+       RowBox[{"#", "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "2"}], "]"}], "]"}]}], "}"}], "&"}], "/@", 
+    RowBox[{"Reverse", "[", 
+     RowBox[{"SortBy", "[", 
+      RowBox[{
+       RowBox[{"GatherBy", "[", 
+        RowBox[{
+         RowBox[{"RuleTable", "[", 
+          RowBox[{"rnum", ",", "k", ",", "r"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], "&"}]}], "]"}], ",", 
+       RowBox[{
+        RowBox[{"#", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", 
+           RowBox[{"-", "1"}]}], "]"}], "]"}], "&"}]}], "]"}], "]"}]}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.9045506539992037`*^9, 3.9045506539992037`*^9}},
+ CellLabel->"In[29]:=",ExpressionUUID->"a34f02ad-edc6-4997-b4b6-dad6bfe52d29"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"SpreadingStateQ", "[", 
+    RowBox[{"rnum_Integer", ",", 
+     RowBox[{"k_Integer", ":", "2"}], ",", 
+     RowBox[{"r_", ":", "1"}]}], "]"}], ":=", "\n", 
+   RowBox[{"MemberQ", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"outState", "=", 
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}]}], "}"}], ",", "\n", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"Union", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"MemberQ", "[", 
+               RowBox[{"#", ",", "outState"}], "]"}], "&"}], "/@", 
+             RowBox[{"#", "[", 
+              RowBox[{"[", "1", "]"}], "]"}]}], "]"}], ",", "\n", 
+           RowBox[{"Union", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"\[Not]", 
+               RowBox[{"MemberQ", "[", 
+                RowBox[{"#", ",", "outState"}], "]"}]}], "&"}], "/@", 
+             RowBox[{"Complement", "[", 
+              RowBox[{
+               RowBox[{"Tuples", "[", 
+                RowBox[{
+                 RowBox[{"Range", "[", 
+                  RowBox[{"0", ",", 
+                   RowBox[{"k", "-", "1"}]}], "]"}], ",", 
+                 RowBox[{"\[LeftFloor]", 
+                  RowBox[{
+                   RowBox[{"2", "r"}], "+", "1"}], "\[RightFloor]"}]}], "]"}],
+                ",", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], "]"}]}], "}"}]}], 
+        "]"}], "&"}], "\n", "/@", 
+      RowBox[{"RuleTablePartitioned", "[", 
+       RowBox[{"rnum", ",", "k", ",", "r"}], "]"}]}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "True", "}"}], ",", 
+       RowBox[{"{", "True", "}"}]}], "}"}]}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.9045506680713606`*^9, 3.9045506680713606`*^9}},
+ CellLabel->"In[30]:=",ExpressionUUID->"142113b2-3eb9-4b5c-a682-1576c33b9bdb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"SpreadingState", "[", 
+     RowBox[{"rnum_Integer", ",", 
+      RowBox[{"k_Integer", ":", "2"}], ",", 
+      RowBox[{"r_", ":", "1"}]}], "]"}], ":=", "\n", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"pos", "=", 
+        RowBox[{"Position", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"Module", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"outState", "=", 
+                RowBox[{"#", "[", 
+                 RowBox[{"[", "2", "]"}], "]"}]}], "}"}], ",", "\n", 
+              RowBox[{"{", "\n", 
+               RowBox[{
+                RowBox[{"Union", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"MemberQ", "[", 
+                    RowBox[{"#", ",", "outState"}], "]"}], "&"}], "/@", 
+                  RowBox[{"#", "[", 
+                   RowBox[{"[", "1", "]"}], "]"}]}], "]"}], ",", "\n", 
+                RowBox[{"Union", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"\[Not]", 
+                    RowBox[{"MemberQ", "[", 
+                    RowBox[{"#", ",", "outState"}], "]"}]}], "&"}], "/@", 
+                  RowBox[{"Complement", "[", 
+                   RowBox[{
+                    RowBox[{"Tuples", "[", 
+                    RowBox[{
+                    RowBox[{"Range", "[", 
+                    RowBox[{"0", ",", 
+                    RowBox[{"k", "-", "1"}]}], "]"}], ",", 
+                    RowBox[{"\[LeftFloor]", 
+                    RowBox[{
+                    RowBox[{"2", "r"}], "+", "1"}], "\[RightFloor]"}]}], 
+                    "]"}], ",", 
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], "]"}]}], "\n", 
+               "}"}]}], "]"}], "&"}], "/@", 
+           RowBox[{"Reverse", "@", 
+            RowBox[{"RuleTablePartitioned", "[", 
+             RowBox[{"rnum", ",", "k", ",", "r"}], "]"}]}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", "True", "}"}], ",", 
+            RowBox[{"{", "True", "}"}]}], "}"}]}], "]"}]}], "}"}], ",", "\n", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"pos", "!=", 
+         RowBox[{"{", "}"}]}], ",", 
+        RowBox[{
+         RowBox[{"pos", "[", 
+          RowBox[{"[", 
+           RowBox[{"1", ",", "1"}], "]"}], "]"}], "-", "1"}], ",", 
+        RowBox[{"{", "}"}]}], "]"}]}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Verificar", " ", "a", " ", "exist\[EHat]ncia", " ", "de", " ", "um", " ", 
+    "estado", " ", "de", " ", "espalhamento", " ", "na", " ", "regra", " ", 
+    "128"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"SpreadingStateQ", "[", "128", "]"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{"Retorna", ":", "True"}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Verificar", " ", "a", " ", "exist\[EHat]ncia", " ", "de", " ", "um", " ", 
+    "estado", " ", "de", " ", "espalhamento", " ", "na", " ", "regra", " ", 
+    "127"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"SpreadingStateQ", "[", "127", "]"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{"Retorna", ":", "False"}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Verificar", " ", "a", " ", "exist\[EHat]ncia", " ", "de", " ", "um", " ",
+      "estado", " ", "de", " ", "espalhamento", " ", "na", " ", "regra", " ", 
+     "19485", " ", "com", " ", "k"}], "=", 
+    RowBox[{
+     RowBox[{"3", " ", "e", " ", "r"}], "=", "0.5"}]}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"SpreadingStateQ", "[", 
+   RowBox[{"19485", ",", "3", ",", "0.5"}], "]"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{"Retorna", ":", "True"}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Encontrar", " ", "a", " ", "posi\[CCedilla]\[ATilde]o", " ", "do", " ", 
+    "estado", " ", "de", " ", "espalhamento", " ", "para", " ", "a", " ", 
+    "regra", " ", "128"}], "*)"}]}], "\n", 
+ RowBox[{"SpreadingState", "[", "128", "]"}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Se", " ", "retornar", " ", "n"}], ",", 
+    RowBox[{
+     RowBox[{"isso", " ", "significa", " ", "que", " ", "o", " ", "n"}], "-", 
+     RowBox[{
+     "\[EAcute]simo", " ", "elemento", " ", "da", " ", "tabela", " ", "de", 
+      " ", "regras", " ", "\[EAcute]", " ", "um", " ", "estado", " ", "de", 
+      " ", "espalhamento"}]}]}], "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.9045506886246214`*^9, 3.904550688625479*^9}},
+ CellLabel->"In[31]:=",ExpressionUUID->"ec8314a5-abf3-487c-a323-ca9c5513b6e8"],
+
+Cell[BoxData["True"], "Output",
+ CellChangeTimes->{3.9045506900290136`*^9},
+ CellLabel->"Out[32]=",ExpressionUUID->"e486c4bf-0140-44ee-8555-2b67a4628dfa"],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{3.9045506900420322`*^9},
+ CellLabel->"Out[33]=",ExpressionUUID->"798a95bd-4e4d-4a10-bf94-cdab9e1e7377"],
+
+Cell[BoxData["True"], "Output",
+ CellChangeTimes->{3.9045506900420322`*^9},
+ CellLabel->"Out[34]=",ExpressionUUID->"b8d6bdf4-1a4c-4c1e-badc-3b39f05f34d7"],
+
+Cell[BoxData["0"], "Output",
+ CellChangeTimes->{3.9045506900420322`*^9},
+ CellLabel->"Out[35]=",ExpressionUUID->"baedd9cd-98c6-416e-9346-a26be89433d1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Analisar", " ", "estados", " ", "de", " ", "espalhamento", " ", "no", " ",
+     "espa\[CCedilla]o", " ", "elementar"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Para", " ", "o", " ", "espa\[CCedilla]o", " ", "de", " ", "raio", " ", 
+     "1.5"}], ",", " ", 
+    RowBox[{
+    "\[EAcute]", " ", "necess\[AAcute]rio", " ", "determinar", " ", "o", " ", 
+     "conjunto", " ", "de", " ", "regras", " ", "apropriado", " ", "com", " ",
+      "base", " ", "em", " ", "k", " ", "e", " ", "r"}], ",", 
+    RowBox[{
+    "e", " ", "ent\[ATilde]o", " ", "aplicar", " ", "uma", " ", "abordagem", 
+     " ", "semelhante"}]}], "*)"}], "\n", 
+  RowBox[{"elementarySpreadingStates", "=", 
+   RowBox[{"Select", "[", 
+    RowBox[{
+     RowBox[{"Range", "[", 
+      RowBox[{"0", ",", "255"}], "]"}], ",", "SpreadingStateQ"}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.9045507052427464`*^9, 3.9045507052427464`*^9}, {
+  3.904550736449503*^9, 
+  3.9045507366542625`*^9}},ExpressionUUID->"04fb83e6-a084-432e-948b-\
+14c9b1f66fe3"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"128", ",", "254"}], "}"}]], "Output",
+ CellChangeTimes->{3.9045507068035307`*^9},
+ CellLabel->"Out[36]=",ExpressionUUID->"8f3d69a2-ac1a-4291-a5ad-3d082a6a1974"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{958.5, 735},
+WindowMargins->{{1914.75, Automatic}, {Automatic, 0}},
+FrontEndVersion->"13.3 for Microsoft Windows (64-bit) (July 24, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"67e0e528-6ec5-4ef4-ac4d-99f54cfeb147"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 183, 3, 160, "Title",ExpressionUUID->"89da95e9-a908-4767-beb9-087c7bea0742"],
+Cell[CellGroupData[{
+Cell[788, 29, 439, 8, 143, "Section",ExpressionUUID->"77ac4060-98f7-446a-9942-2eca6b1df2e5"],
+Cell[1230, 39, 361, 9, 35, "Text",ExpressionUUID->"fd61fa0c-fb87-4196-b6fe-56a34f8a96ad"],
+Cell[CellGroupData[{
+Cell[1616, 52, 724, 21, 78, "Input",ExpressionUUID->"072a063a-a74c-468b-a498-ef6a2e7c2cb5"],
+Cell[2343, 75, 1135, 28, 52, "Output",ExpressionUUID->"c6dcfb7e-e710-476e-bd82-7ee6043c2c81"],
+Cell[3481, 105, 1133, 28, 52, "Output",ExpressionUUID->"fbebf9d8-57c7-45d1-adaf-e2ef4cda84bc"]
+}, Open  ]],
+Cell[4629, 136, 492, 10, 58, "Text",ExpressionUUID->"8a1b506f-9046-4f56-b366-76fe432cba8f"],
+Cell[CellGroupData[{
+Cell[5146, 150, 808, 23, 43, "Input",ExpressionUUID->"613a361f-0278-48b8-b64a-999ec08c19bf"],
+Cell[5957, 175, 1135, 28, 52, "Output",ExpressionUUID->"7b9c6d56-45da-4754-9d6a-7f1043533a91"]
+}, Open  ]],
+Cell[7107, 206, 505, 11, 58, "Text",ExpressionUUID->"364f8509-7af9-4611-bbff-b932734ecc70"],
+Cell[CellGroupData[{
+Cell[7637, 221, 565, 16, 43, "Input",ExpressionUUID->"a0799531-eb53-4518-a78f-7ae74ba15e57"],
+Cell[8205, 239, 1133, 28, 52, "Output",ExpressionUUID->"f1e07463-70f8-4f72-904b-b54ff570ac4a"]
+}, Open  ]],
+Cell[9353, 270, 425, 9, 58, "Text",ExpressionUUID->"09682a8b-0168-4b49-9205-b4b364fb3a58"],
+Cell[CellGroupData[{
+Cell[9803, 283, 690, 20, 43, "Input",ExpressionUUID->"6162e91c-db26-4744-8cd3-3bdc44577a0a"],
+Cell[10496, 305, 1135, 28, 52, "Output",ExpressionUUID->"0c4ff1c2-76f8-45a6-b83d-11f426028cd1"]
+}, Open  ]],
+Cell[11646, 336, 381, 9, 58, "Text",ExpressionUUID->"c8896c75-0c2f-4970-a97d-1ac0e14a01e4"],
+Cell[CellGroupData[{
+Cell[12052, 349, 208, 3, 43, "Input",ExpressionUUID->"c5bb425b-ad05-4657-8e0b-0ce2a6836314"],
+Cell[12263, 354, 1013, 22, 219, "Output",ExpressionUUID->"1b966edf-0987-4539-8adc-6156fb4590b5"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13325, 382, 620, 12, 219, "Section",ExpressionUUID->"325150df-9946-484f-9675-008650cfcbd3"],
+Cell[CellGroupData[{
+Cell[13970, 398, 2270, 55, 143, "Input",ExpressionUUID->"0cb93c07-3646-4c0a-8bdc-229bc345e6d1"],
+Cell[16243, 455, 401, 10, 32, "Output",ExpressionUUID->"8f6a8dee-744b-46fa-8291-02c78bfd05d6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16681, 470, 3427, 89, 372, "Input",ExpressionUUID->"8571b59b-a066-469d-bdc4-b732bc1fe191"],
+Cell[20111, 561, 150, 2, 32, "Output",ExpressionUUID->"5e0e83fc-d486-4c53-8f67-82915df0d284"],
+Cell[20264, 565, 2398, 56, 199, "Output",ExpressionUUID->"77617012-5855-4dc3-88d4-f978b0fc291a"]
+}, Open  ]],
+Cell[22677, 624, 645, 11, 81, "Text",ExpressionUUID->"7180dc33-6237-48c9-b814-884d2c44ce64"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23359, 640, 358, 8, 143, "Section",ExpressionUUID->"e8620239-3feb-41ca-9614-f164e13484ff"],
+Cell[CellGroupData[{
+Cell[23742, 652, 545, 10, 108, "Subsection",ExpressionUUID->"c7291a5a-56d2-40fd-b926-1db780537d52"],
+Cell[24290, 664, 2426, 57, 244, "Input",ExpressionUUID->"ff795f75-d567-4f36-b3bf-fd9fd27e0c04"],
+Cell[26719, 723, 691, 19, 43, "Input",ExpressionUUID->"e01bbd62-1218-4de7-949b-3515a971904c"],
+Cell[27413, 744, 856, 23, 78, "Input",ExpressionUUID->"5cec759c-caf8-460e-9cef-c33d51cba1e9"],
+Cell[28272, 769, 992, 27, 97, "Input",ExpressionUUID->"80c42d88-77fb-4cde-87bc-534189dc8106"],
+Cell[29267, 798, 440, 11, 62, "Input",ExpressionUUID->"a3f5ba5b-86a8-40a2-9d21-f60c25e0e828"],
+Cell[29710, 811, 455, 11, 62, "Input",ExpressionUUID->"fe8963f1-7da3-41f2-9d05-4e6404cafed4"],
+Cell[CellGroupData[{
+Cell[30190, 826, 304, 6, 48, "Input",ExpressionUUID->"aaf7ff41-5a9d-407c-9171-83d584cd97db"],
+Cell[30497, 834, 985, 15, 71, "Output",ExpressionUUID->"1cc7fe1a-0c19-49b8-9361-d34a8eaa4bd3"]
+}, Open  ]],
+Cell[31497, 852, 1952, 31, 288, "Text",ExpressionUUID->"4f897874-ad40-481d-b2e1-f9ddb8edf7ee"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33498, 889, 345, 7, 143, "Section",ExpressionUUID->"aba23b83-1ae7-409a-842d-9a930aa25ad4"],
+Cell[CellGroupData[{
+Cell[33868, 900, 543, 9, 135, "Subsection",ExpressionUUID->"b3b60589-cd36-456d-8b8f-fe740156ab17"],
+Cell[34414, 911, 1177, 35, 78, "Input",ExpressionUUID->"a34f02ad-edc6-4997-b4b6-dad6bfe52d29"],
+Cell[35594, 948, 2000, 53, 184, "Input",ExpressionUUID->"142113b2-3eb9-4b5c-a682-1576c33b9bdb"],
+Cell[CellGroupData[{
+Cell[37619, 1005, 4551, 115, 412, "Input",ExpressionUUID->"ec8314a5-abf3-487c-a323-ca9c5513b6e8"],
+Cell[42173, 1122, 154, 2, 32, "Output",ExpressionUUID->"e486c4bf-0140-44ee-8555-2b67a4628dfa"],
+Cell[42330, 1126, 155, 2, 32, "Output",ExpressionUUID->"798a95bd-4e4d-4a10-bf94-cdab9e1e7377"],
+Cell[42488, 1130, 154, 2, 32, "Output",ExpressionUUID->"b8d6bdf4-1a4c-4c1e-badc-3b39f05f34d7"],
+Cell[42645, 1134, 151, 2, 32, "Output",ExpressionUUID->"baedd9cd-98c6-416e-9346-a26be89433d1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42833, 1141, 1106, 27, 100, "Input",ExpressionUUID->"04fb83e6-a084-432e-948b-14c9b1f66fe3"],
+Cell[43942, 1170, 200, 4, 32, "Output",ExpressionUUID->"8f3d69a2-ac1a-4291-a5ad-3d082a6a1974"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
